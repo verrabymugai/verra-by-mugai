@@ -1,0 +1,6 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/messages/delete", "destination": "/api/delete-message" }
+  ]
+}

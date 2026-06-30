@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VERRA by Mugai | Admin Portal</title>
+  <link rel="stylesheet" href="index.css">
+  <style>
+    /* Admin Portal Specific Styles */
+    .admin-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    .admin-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .admin-title {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-olive);
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+
+    .login-box {
+      max-width: 400px;
+      margin: 5rem auto;
+      background: rgba(245, 237, 227, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(193, 154, 107, 0.2);
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 10px 40px rgba(28, 43, 31, 0.03);
+      text-align: center;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid rgba(193, 154, 107, 0.25);
+      margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+      font-family: var(--font-sans);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0.75rem 1.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-brown);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      margin-bottom: -1px;
+      opacity: 0.55;
+    }
+
+    .tab-btn:hover { opacity: 0.85; }
+
+    .tab-btn.active {
+      color: var(--color-olive);
+      border-bottom-color: var(--color-olive);
+      opacity: 1;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Portal top bar */
+    .portal-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(193, 154, 107, 0.2);
+      padding-bottom: 1.5rem;
+    }
+
+    .action-btn {
+      font-family: var(--font-sans);
+      background-color: transparent;
+      color: var(--color-olive);
+      border: 1px solid var(--color-olive);
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .action-btn:hover {
+      background-color: var(--color-olive);
+      color: var(--color-beige);
+    }
+
+    /* Stats cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: rgba(245, 237, 227, 0.5);
+      border: 1px solid rgba(193, 154, 107, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: var(--transition-smooth);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(193, 154, 107, 0.45);
+      box-shadow: 0 8px 25px rgba(28, 43, 31, 0.05);
+    }
+
+    .stat-number {
+      font-family: var(--font-serif);
+      font-size: 2.8rem;
+      color: var(--color-olive);
+      font-weight: 600;
+      line-height: 1;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--color-brown);
+      opacity: 0.7;
+      font-weight: 600;
+    }
+
+    /* Visits table */
+    .visits-table-wrap {
+      background: rgba(245, 237, 227, 0.35);
+      border: 1px solid rgba(193, 154, 107, 0.15);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .visits-table-title {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--color-olive);
+      font-weight: 700;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(193, 154, 107, 0.15);
+    }
+
+    .visits-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .visits-table th {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--color-olive);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(193, 154, 107, 0.15);
+      background: rgba(245, 237, 227, 0.3);
+    }
+
+    .visits-table td {
+      font-size: 0.9rem;
+      color: var(--color-brown);
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid rgba(193, 154, 107, 0.08);
+      vertical-align: top;
+    }
+
+    .visits-table tr:last-child td { border-bottom: none; }
+
+    .visits-table tr:hover td { background: rgba(193, 154, 107, 0.06); }
+
+    .device-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .device-badge.Desktop { background: rgba(59, 74, 34, 0.12); color: var(--color-olive); }
+    .device-badge.Mobile  { background: rgba(108, 79, 48, 0.12); color: var(--color-brown); }
+    .device-badge.Tablet  { background: rgba(193, 154, 107, 0.2); color: #8a6a35; }
+
+    /* Message cards */
+    .messages-list { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem; }
+
+    .message-card {
+      background: rgba(245, 237, 227, 0.45);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(193, 154, 107, 0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      transition: var(--transition-smooth);
+      text-align: left;
+    }
+
+    .message-card:hover {
+      transform: translateY(-2px);
+      background: rgba(245, 237, 227, 0.58);
+      border-color: rgba(193, 154, 107, 0.4);
+      box-shadow: 0 8px 25px rgba(28, 43, 31, 0.04);
+    }
+
+    .message-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(193, 154, 107, 0.15);
+      padding-bottom: 1rem;
+    }
+
+    .meta-item { color: var(--color-brown); }
+
+    .meta-item strong {
+      color: var(--color-olive);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .message-body {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--color-brown);
+      white-space: pre-wrap;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: none;
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: #c92a2a;
+      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .delete-btn:hover { background-color: #c92a2a; color: #fff; border-color: #c92a2a; }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem;
+      color: var(--color-brown);
+      opacity: 0.65;
+      font-size: 1.15rem;
+      font-style: italic;
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .visits-table th:nth-child(4),
+      .visits-table td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lighting-overlay"></div>
+
+  <!-- LOGIN PANEL -->
+  <div id="login-panel" class="login-box">
+    <div class="logo-wrapper" style="max-width:240px; margin:0 auto 1.5rem auto;">
+      <img src="assets/logo_transparent.png" alt="VERRA Logo" style="width:100%;height:auto;">
+    </div>
+    <h2 class="section-title" style="font-size:1.45rem;margin-bottom:1.5rem;">Admin Access</h2>
+    <form id="login-form" class="contact-form">
+      <div class="form-group">
+        <label for="portal-password">Password</label>
+        <input type="password" id="portal-password" required placeholder="Enter admin password">
+      </div>
+      <button type="submit" class="submit-button" style="width:100%;margin-top:0.5rem;">Unlock Portal</button>
+      <div id="login-error" class="form-status error" style="margin-top:1rem; display:none;"></div>
+    </form>
+  </div>
+
+  <!-- DASHBOARD PANEL -->
+  <div id="dashboard-panel" class="admin-container" style="display:none;">
+    <header class="admin-header">
+      <div class="logo-wrapper" style="max-width:160px;margin:0 auto;">
+        <img src="assets/logo_transparent.png" alt="VERRA Logo" style="width:100%;height:auto;">
+      </div>
+      <h1 class="admin-title">Admin Portal</h1>
+      <div class="divider-line" style="margin:1rem auto; width:90px;"></div>
+    </header>
+
+    <!-- Top bar -->
+    <div class="portal-actions">
+      <p class="body-text" id="status-summary" style="margin-bottom:0; font-weight:600;"></p>
+      <div style="display:flex; gap:0.75rem;">
+        <button id="refresh-btn" class="action-btn">Refresh</button>
+        <button id="logout-btn" class="action-btn" style="border-color:rgba(108,79,48,0.4);color:var(--color-brown);">Logout</button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="analytics-panel" id="tab-analytics">📊 Visitor Analytics</button>
+      <button class="tab-btn" data-tab="messages-panel" id="tab-messages">💬 Messages</button>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div id="analytics-panel" class="tab-panel active">
+      <div class="stats-grid" id="stats-grid">
+        <!-- injected -->
+      </div>
+      <div class="visits-table-wrap">
+        <div class="visits-table-title">Recent Visits (Last 50)</div>
+        <div style="overflow-x:auto;">
+          <table class="visits-table" id="visits-table">
+            <thead>
+              <tr>
+                <th>Date &amp; Time</th>
+                <th>Device</th>
+                <th>IP Address</th>
+                <th>Referred From</th>
+              </tr>
+            </thead>
+            <tbody id="visits-body">
+              <!-- injected -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES TAB -->
+    <div id="messages-panel" class="tab-panel">
+      <div id="messages-container" class="messages-list"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginPanel   = document.getElementById('login-panel');
+      const dashPanel    = document.getElementById('dashboard-panel');
+      const loginForm    = document.getElementById('login-form');
+      const loginError   = document.getElementById('login-error');
+      const statusSumEl  = document.getElementById('status-summary');
+      const refreshBtn   = document.getElementById('refresh-btn');
+      const logoutBtn    = document.getElementById('logout-btn');
+      const msgContainer = document.getElementById('messages-container');
+      const visitsBody   = document.getElementById('visits-body');
+      const statsGrid    = document.getElementById('stats-grid');
+
+      let portalPassword = localStorage.getItem('verra_portal_pwd') || '';
+
+      // Tab switching
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+      });
+
+      // Auto-login if saved
+      if (portalPassword) attemptLoad(portalPassword);
+
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        loginError.style.display = 'none';
+        attemptLoad(document.getElementById('portal-password').value.trim());
+      });
+
+      refreshBtn.addEventListener('click', () => { if (portalPassword) loadAll(portalPassword); });
+
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('verra_portal_pwd');
+        portalPassword = '';
+        loginPanel.style.display = 'block';
+        dashPanel.style.display = 'none';
+        document.getElementById('portal-password').value = '';
+      });
+
+      async function attemptLoad(pwd) {
+        try {
+          const r = await fetch(`/api/messages?password=${encodeURIComponent(pwd)}`);
+          if (r.ok) {
+            portalPassword = pwd;
+            localStorage.setItem('verra_portal_pwd', pwd);
+            loginPanel.style.display = 'none';
+            dashPanel.style.display = 'block';
+            loadAll(pwd);
+          } else {
+            const d = await r.json();
+            showLoginError(d.error || 'Invalid password.');
+            localStorage.removeItem('verra_portal_pwd');
+          }
+        } catch (err) {
+          showLoginError('Network error connecting to the portal.');
+        }
+      }
+
+      async function loadAll(pwd) {
+        statusSumEl.innerText = 'Loading…';
+        const [msgs, visits] = await Promise.all([
+          fetchJSON(`/api/messages?password=${encodeURIComponent(pwd)}`),
+          fetchJSON(`/api/analytics?password=${encodeURIComponent(pwd)}`)
+        ]);
+        renderMessages(msgs || []);
+        renderAnalytics(visits || []);
+        statusSumEl.innerText = `${(msgs||[]).length} Message${(msgs||[]).length !== 1 ? 's' : ''} · ${(visits||[]).length} Total Visit${(visits||[]).length !== 1 ? 's' : ''}`;
+      }
+
+      async function fetchJSON(url) {
+        try { const r = await fetch(url); return r.ok ? r.json() : []; }
+        catch (e) { return []; }
+      }
+
+      /* ── ANALYTICS ── */
+      function renderAnalytics(visits) {
+        const total   = visits.length;
+        const unique  = new Set(visits.map(v => v.ip)).size;
+        const today   = visits.filter(v => v.timestamp.startsWith(new Date().toISOString().slice(0, 10))).length;
+        const devices = visits.reduce((acc, v) => { acc[v.device] = (acc[v.device] || 0) + 1; return acc; }, {});
+
+        statsGrid.innerHTML = `
+          ${statCard(total, 'Total Visits')}
+          ${statCard(unique, 'Unique Visitors')}
+          ${statCard(today, 'Visits Today')}
+          ${statCard(devices.Desktop || 0, 'Desktop')}
+          ${statCard(devices.Mobile || 0, 'Mobile')}
+          ${statCard(devices.Tablet || 0, 'Tablet')}
+        `;
+
+        // Most recent 50 visits
+        const recent = [...visits].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 50);
+        visitsBody.innerHTML = recent.length === 0
+          ? `<tr><td colspan="4" style="text-align:center;padding:2rem;font-style:italic;opacity:0.6;">No visits recorded yet.</td></tr>`
+          : recent.map(v => `
+            <tr>
+              <td>${formatDate(v.timestamp)}</td>
+              <td><span class="device-badge ${v.device}">${v.device}</span></td>
+              <td style="font-size:0.85rem;opacity:0.8;">${escapeHTML(v.ip)}</td>
+              <td style="font-size:0.82rem;opacity:0.75;max-width:220px;word-break:break-all;">${escapeHTML(v.referer)}</td>
+            </tr>`).join('');
+      }
+
+      function statCard(num, label) {
+        return `<div class="stat-card">
+          <span class="stat-number">${num}</span>
+          <span class="stat-label">${label}</span>
+        </div>`;
+      }
+
+      /* ── MESSAGES ── */
+      function renderMessages(messages) {
+        msgContainer.innerHTML = '';
+        if (messages.length === 0) {
+          msgContainer.innerHTML = '<div class="empty-state">No messages have been submitted yet.</div>';
+          return;
+        }
+        [...messages].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(msg => {
+          const card = document.createElement('div');
+          card.className = 'message-card';
+          card.innerHTML = `
+            <div class="message-meta">
+              <div class="meta-item"><strong>Sender</strong>${escapeHTML(msg.name)}</div>
+              <div class="meta-item"><strong>Email</strong><a href="mailto:${msg.email}" style="color:inherit;text-decoration:underline;">${escapeHTML(msg.email)}</a></div>
+              <div class="meta-item"><strong>Phone</strong>${msg.phone ? escapeHTML(msg.phone) : '<em>None</em>'}</div>
+              <div class="meta-item"><strong>Submitted</strong>${formatDate(msg.timestamp)}</div>
+            </div>
+            <div class="message-body">${escapeHTML(msg.message)}</div>
+            <button class="delete-btn" data-id="${msg.id}">Delete</button>`;
+          card.querySelector('.delete-btn').addEventListener('click', () => {
+            if (confirm('Delete this message?')) deleteMessage(msg.id);
+          });
+          msgContainer.appendChild(card);
+        });
+      }
+
+      async function deleteMessage(id) {
+        try {
+          const r = await fetch('/api/messages/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, password: portalPassword })
+          });
+          if (r.ok) loadAll(portalPassword);
+          else alert('Failed to delete.');
+        } catch (e) { alert('Network error.'); }
+      }
+
+      /* ── Helpers ── */
+      function showLoginError(msg) {
+        loginError.innerText = msg;
+        loginError.style.display = 'block';
+      }
+
+      function formatDate(iso) {
+        return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+      }
+
+      function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/[&<>'"]/g, t => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t]||t));
+      }
+    });
+  </script>
+</body>
+</html>

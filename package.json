@@ -1,0 +1,12 @@
+{
+  "name": "verra-by-mugai",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "E-Commerce homepage and brand story for VERRA by Mugai",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.0"
+  }
+}
