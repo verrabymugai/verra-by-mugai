@@ -1,6 +1,7 @@
 node_modules
 inquiries.json
-aarthi-homes/assets/Video.mp4
+**/Video.mp4
+archive_old_projects
 calculations.json
 .system_generated
 .git
