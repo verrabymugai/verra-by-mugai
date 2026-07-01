@@ -44,13 +44,20 @@ if (fs.existsSync('.env')) {
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
 
 const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   let pathname = parsedUrl.pathname;
 
   console.log(`[${req.method}] ${pathname}`);
+
+  if (pathname.startsWith('/api/') && !supabase) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: 'Supabase configuration is missing. Please configure SUPABASE_URL and SUPABASE_KEY in your local .env file.' }));
+    return;
+  }
 
   // API Route: POST /api/messages (Submit message)
   if (req.method === 'POST' && pathname === '/api/messages') {

@@ -426,8 +426,14 @@
             dashPanel.style.display = 'block';
             loadAll(pwd);
           } else {
-            const d = await r.json();
-            showLoginError(d.error || 'Invalid password.');
+            let errorMsg = 'Invalid password.';
+            try {
+              const d = await r.json();
+              errorMsg = d.error || errorMsg;
+            } catch (e) {
+              errorMsg = `Server error (${r.status}): Please check database configuration.`;
+            }
+            showLoginError(errorMsg);
             localStorage.removeItem('verra_portal_pwd');
           }
         } catch (err) {
