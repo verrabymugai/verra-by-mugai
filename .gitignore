@@ -13,3 +13,5 @@ calculations.json
 .vercel
 messages.json
 analytics.json
+
+.env*
