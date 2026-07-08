@@ -69,6 +69,13 @@ export default async function handler(req, res) {
         return;
       }
 
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(String(email))) {
+        res.status(400).json({ error: 'Please provide a valid email address.' });
+        return;
+      }
+
       // Sanitize: limit field lengths to prevent abuse
       const sanitized = {
         id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),

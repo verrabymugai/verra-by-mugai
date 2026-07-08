@@ -145,6 +145,15 @@ const server = http.createServer(async (req, res) => {
           res.end(JSON.stringify({ error: 'Name, email, and message are required.' }));
           return;
         }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(String(email))) {
+          res.statusCode = 400;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: 'Please provide a valid email address.' }));
+          return;
+        }
         
         const newMessage = {
           id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
@@ -366,7 +375,8 @@ const server = http.createServer(async (req, res) => {
   } else {
     res.statusCode = 404;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.end(`<html><head><title>404 Not Found</title></head><body style="font-family: sans-serif; background: #f5ede3; color: #1c2b1f; padding: 2rem; text-align: center;"><h1>404 Not Found</h1><p>The file <b>${pathname}</b> could not be found locally.</p><a href="/" style="color: #c19a6b; font-weight: bold;">Go back to home</a></body></html>`);
+    const safePath = pathname.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    res.end(`<html><head><title>404 Not Found</title></head><body style="font-family: sans-serif; background: #f5ede3; color: #1c2b1f; padding: 2rem; text-align: center;"><h1>404 Not Found</h1><p>The file <b>${safePath}</b> could not be found locally.</p><a href="/" style="color: #c19a6b; font-weight: bold;">Go back to home</a></body></html>`);
   }
 });
 
