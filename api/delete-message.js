@@ -4,10 +4,26 @@ const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
 const supabase = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+// --- CORS: restrict to own domain ---
+const ALLOWED_ORIGINS = [
+  'https://www.verrabymugai.com',
+  'https://verrabymugai.com',
+  'https://verra-by-mugai.vercel.app',
+  'http://localhost:3000'
+];
+
+function setCorsHeaders(req, res) {
+  const origin = req.headers.origin || '';
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Vary', 'Origin');
+}
+
+export default async function handler(req, res) {
+  setCorsHeaders(req, res);
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -21,13 +37,17 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      const { id, password } = req.body;
+      // Read password from Authorization header
+      const authHeader = req.headers['authorization'] || '';
+      const password = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
       const expectedPassword = process.env.PORTAL_PASSWORD || 'verra2026';
 
-      if (password !== expectedPassword) {
+      if (!password || password !== expectedPassword) {
         res.status(401).json({ error: 'Unauthorized.' });
         return;
       }
+
+      const { id } = req.body;
 
       if (!id) {
         res.status(400).json({ error: 'Message ID is required.' });
@@ -37,7 +57,7 @@ export default async function handler(req, res) {
       const { error } = await supabase
         .from('messages')
         .delete()
-        .eq('id', id);
+        .eq('id', String(id).substring(0, 50));
 
       if (error) {
         console.error('Supabase delete error:', error);

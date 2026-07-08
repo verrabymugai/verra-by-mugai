@@ -385,7 +385,7 @@
       const visitsBody   = document.getElementById('visits-body');
       const statsGrid    = document.getElementById('stats-grid');
 
-      let portalPassword = localStorage.getItem('verra_portal_pwd') || '';
+      let portalPassword = sessionStorage.getItem('verra_portal_pwd') || '';
 
       // Tab switching
       document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -409,7 +409,7 @@
       refreshBtn.addEventListener('click', () => { if (portalPassword) loadAll(portalPassword); });
 
       logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('verra_portal_pwd');
+        sessionStorage.removeItem('verra_portal_pwd');
         portalPassword = '';
         loginPanel.style.display = 'block';
         dashPanel.style.display = 'none';
@@ -418,10 +418,12 @@
 
       async function attemptLoad(pwd) {
         try {
-          const r = await fetch(`/api/messages?password=${encodeURIComponent(pwd)}`);
+          const r = await fetch('/api/messages', {
+            headers: { 'Authorization': 'Bearer ' + pwd }
+          });
           if (r.ok) {
             portalPassword = pwd;
-            localStorage.setItem('verra_portal_pwd', pwd);
+            sessionStorage.setItem('verra_portal_pwd', pwd);
             loginPanel.style.display = 'none';
             dashPanel.style.display = 'block';
             loadAll(pwd);
@@ -434,7 +436,7 @@
               errorMsg = `Server error (${r.status}): Please check database configuration.`;
             }
             showLoginError(errorMsg);
-            localStorage.removeItem('verra_portal_pwd');
+            sessionStorage.removeItem('verra_portal_pwd');
           }
         } catch (err) {
           showLoginError('Network error connecting to the portal.');
@@ -443,17 +445,18 @@
 
       async function loadAll(pwd) {
         statusSumEl.innerText = 'Loading…';
+        const authHeaders = { 'Authorization': 'Bearer ' + pwd };
         const [msgs, visits] = await Promise.all([
-          fetchJSON(`/api/messages?password=${encodeURIComponent(pwd)}`),
-          fetchJSON(`/api/analytics?password=${encodeURIComponent(pwd)}`)
+          fetchJSON('/api/messages', authHeaders),
+          fetchJSON('/api/analytics', authHeaders)
         ]);
         renderMessages(msgs || []);
         renderAnalytics(visits || []);
         statusSumEl.innerText = `${(msgs||[]).length} Message${(msgs||[]).length !== 1 ? 's' : ''} · ${(visits||[]).length} Total Visit${(visits||[]).length !== 1 ? 's' : ''}`;
       }
 
-      async function fetchJSON(url) {
-        try { const r = await fetch(url); return r.ok ? r.json() : []; }
+      async function fetchJSON(url, headers) {
+        try { const r = await fetch(url, { headers }); return r.ok ? r.json() : []; }
         catch (e) { return []; }
       }
 
@@ -523,8 +526,11 @@
         try {
           const r = await fetch('/api/messages/delete', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, password: portalPassword })
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + portalPassword
+            },
+            body: JSON.stringify({ id })
           });
           if (r.ok) loadAll(portalPassword);
           else alert('Failed to delete.');
